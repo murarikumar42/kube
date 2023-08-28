@@ -1,0 +1,5 @@
+# values.yaml
+dbName: javatechie
+username: root
+password: root
+storageSize: 1Gi

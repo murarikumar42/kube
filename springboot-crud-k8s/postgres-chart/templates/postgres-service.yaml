@@ -1,0 +1,16 @@
+# Define a 'Service' to Expose PostgreSQL to Other Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres  # DNS name
+  labels:
+    app: postgres
+    tier: database
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:  # PostgreSQL Pod should contain the same labels
+    app: postgres
+    tier: database
+  clusterIP: None  # We use DNS, thus ClusterIP is not relevant

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+    tier: database
+spec:
+  selector:  # PostgreSQL Pod should contain the same labels
+    matchLabels:
+      app: postgres
+      tier: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:  # Must match 'Service' and 'Deployment' selectors
+        app: postgres
+        tier: database
+    spec:
+      containers:
+        - image: postgres:13  # Use the PostgreSQL image from Docker Hub
+          name: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              value: postgres
+
+            - name: POSTGRES_DATABASE # Setting Database Name from a 'ConfigMap'
+              value: postgres
+
+
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:  # Mounting volume obtained from Persistent Volume Claim
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data  # This is the path in the container on which the mounting will take place.
+      volumes:
+        - name: postgres-persistent-storage  # Obtaining 'volume' from PVC
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim

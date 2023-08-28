@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-crud-deployment
+spec:
+  selector:
+    matchLabels:
+      app: springboot-k8s-postgres # Adjusted label
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: springboot-k8s-postgres # Adjusted label
+
+    spec:
+      containers:
+        - name: springboot-crud-k8s
+          image: murarikumar42/springboot-crud-k8s:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_NAME
+              value: postgres
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_PASSWORD
+              value: postgres
+            - name: EUREKA_HOST
+              value: eureka_host
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-crud-svc
+spec:
+  selector:
+    app: springboot-k8s-postgres # Adjusted label
+  ports:
+    - protocol: "TCP"
+      port: 8080
+      targetPort: 8080
+  type: NodePort
